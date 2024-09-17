@@ -1,0 +1,235 @@
+/* Estilos da galeria de fotos/carrossel */
+
+.carousel-container {
+    position: relative;
+    max-width: 100%;
+    margin: 30px auto;
+    overflow: hidden;
+    text-align: center;
+}
+
+.carousel-wrapper {
+    overflow: hidden;
+    width: 100%;
+}
+
+.carousel {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-item {
+    flex: 0 0 25%;
+    /* 4 imagens por vez */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.carousel img {
+    width: 80px;
+    height: auto;
+    object-fit: cover;
+    margin: 10px;
+}
+
+.prev,
+.next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    padding: 16px;
+    margin-top: -22px;
+    color: #d4af37;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    user-select: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fundo semitransparente */
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.prev {
+    left: 10px;
+}
+
+.next {
+    right: 10px;
+}
+
+.prev:hover,
+.next:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+@media (max-width: 768px) {
+    .carousel-item {
+        flex: 0 0 50%;
+        /* 2 imagens por vez em dispositivos menores */
+    }
+    .carousel img {
+        height: 200px;
+        /* Ajuste para telas menores */
+    }
+}
+
+
+/* Responsividade */
+
+@media (max-width: 1024px) {
+    .carousel-item {
+        flex: 0 0 33.33%;
+        /* 3 imagens por vez em tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-item {
+        flex: 0 0 50%;
+        /* 2 imagens por vez em celulares */
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-item {
+        flex: 0 0 100%;
+        /* 1 imagem por vez em celulares muito pequenos */
+    }
+    .prev,
+    .next {
+        padding: 12px;
+        /* Ajuste do tamanho dos botões para telas pequenas */
+    }
+}
+
+
+/* Estilos do vídeo */
+
+.video-container {
+    margin: 30px auto;
+    text-align: center;
+}
+
+.video-container h2 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: #d4af37;
+    /* Cor dourada */
+}
+
+.video-container video,
+.video-container iframe {
+    width: 50%;
+    max-width: 200px;
+    /* Ajuste o tamanho máximo conforme necessário */
+    height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    /* Sombra para destacar o vídeo */
+}
+
+
+/* Responsividade */
+
+@media (max-width: 768px) {
+    .video-container h2 {
+        font-size: 1.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .video-container h2 {
+        font-size: 1em;
+    }
+}
+
+
+/* Área de Depoimentos */
+
+.testimonials-container {
+    background-color: #000;
+    /* Fundo preto */
+    color: #d4af37;
+    /* Texto dourado */
+    padding: 50px 20px;
+    text-align: center;
+    border-radius: 10px;
+    margin-top: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.testimonials-container h2 {
+    font-size: 2em;
+    margin-bottom: 40px;
+    color: #d4af37;
+    /* Título dourado */
+    font-family: 'Georgia', serif;
+}
+
+.testimonials {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.testimonial-item {
+    background-color: #1a1a1a;
+    /* Caixa em tom mais escuro */
+    color: #fff;
+    width: 80%;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.testimonial-item img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.testimonial-item p {
+    font-size: 1.1em;
+    font-style: italic;
+    color: #d4af37;
+    margin-bottom: 10px;
+}
+
+.testimonial-item h4 {
+    margin-top: 10px;
+    font-size: 1em;
+    color: #fff;
+}
+
+
+/* Responsividade */
+
+@media (max-width: 768px) {
+    .testimonials {
+        flex-direction: column;
+        align-items: center;
+    }
+    .testimonial-item {
+        width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+    .testimonials-container h2 {
+        font-size: 1.5em;
+    }
+    .testimonial-item {
+        width: 100%;
+    }
+}
