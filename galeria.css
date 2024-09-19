@@ -21,19 +21,17 @@
 .carousel-item {
     flex: 0 0 25%;
     /* 4 imagens por vez */
-    padding: 5px;
+    padding: 10px;
     box-sizing: border-box;
 }
 
 .carousel img {
-    width: 100%; /* Ajusta para que a imagem ocupe a largura total do item */
+    width: 80px;
     height: auto;
     object-fit: cover;
-    display: block;
-    border-radius: 8px;
+    margin: 10px;
 }
 
-/* Botões de navegação */
 .prev,
 .next {
     cursor: pointer;
@@ -65,6 +63,18 @@
     background-color: rgba(0, 0, 0, 0.8);
 }
 
+@media (max-width: 768px) {
+    .carousel-item {
+        flex: 0 0 50%;
+        /* 2 imagens por vez em dispositivos menores */
+    }
+    .carousel img {
+        height: 200px;
+        /* Ajuste para telas menores */
+    }
+}
+
+
 /* Responsividade */
 
 @media (max-width: 1024px) {
@@ -93,6 +103,7 @@
     }
 }
 
+
 /* Estilos do vídeo */
 
 .video-container {
@@ -118,6 +129,7 @@
     /* Sombra para destacar o vídeo */
 }
 
+
 /* Responsividade */
 
 @media (max-width: 768px) {
@@ -131,6 +143,7 @@
         font-size: 1em;
     }
 }
+
 
 /* Área de Depoimentos */
 
@@ -198,6 +211,7 @@
     font-size: 1em;
     color: #fff;
 }
+
 
 /* Responsividade */
 
