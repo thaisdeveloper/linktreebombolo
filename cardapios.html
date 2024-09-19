@@ -3,116 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cardápios</title>
+    <title>Visualizador de PDF com PDF.js</title>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
     <style>
-        /* Estilos do modal */
-        .modal {
-            display: none; /* Inicialmente escondido */
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #pdf-viewer {
             width: 100%;
-            height: 100%;
-            overflow: auto; /* Habilitar rolagem se necessário */
-            background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro */
+            height: 100vh;
+            overflow: scroll;
         }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto; /* Centralizar o modal */
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            height: 80%; /* Altura para ver o PDF com rolagem */
-            max-width: 900px;
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 10px auto;
         }
-
-        /* Estilos do iframe para PDF */
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            overflow-y: scroll;
+        #pdf-controls {
+            text-align: center;
+            margin-top: 10px;
         }
-
-        /* Botão de fechar o modal */
-        .close-btn {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close-btn:hover,
-        .close-btn:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* Responsividade */
-        @media screen and (max-width: 768px) {
-            .modal-content {
-                width: 90%;
-                height: 90%;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            .modal-content {
-                width: 95%;
-                height: 95%;
-            }
-
-            .close-btn {
-                font-size: 24px;
-            }
+        button {
+            padding: 10px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
 
-<!-- Botão para abrir o modal -->
-<a href="#" id="openModal" class="pdf-link">Ver Cardápio</a>
+<h1 style="text-align:center;">Visualizador de PDF</h1>
 
-<!-- Modal -->
-<div id="pdfModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" id="closeModal">&times;</span>
-        <!-- Aqui o PDF será carregado -->
-        <iframe id="pdfFrame" src="" allowfullscreen></iframe>
-    </div>
+<div id="pdf-controls">
+    <button id="prev-page">Página Anterior</button>
+    <button id="next-page">Próxima Página</button>
+    <span>Página: <span id="page-num"></span> de <span id="page-count"></span></span>
+</div>
+
+<div id="pdf-viewer">
+    <canvas id="pdf-canvas"></canvas>
 </div>
 
 <script>
-    // Referências aos elementos do modal e iframe
-    var modal = document.getElementById("pdfModal");
-    var iframe = document.getElementById("pdfFrame");
-    var openModalBtn = document.getElementById("openModal");
-    var closeModalBtn = document.getElementById("closeModal");
+    var url = 'pdfs/seu_arquivo.pdf'; // Caminho para o arquivo PDF
+    var pdfDoc = null,
+        pageNum = 1,
+        pageIsRendering = false,
+        pageNumIsPending = null;
 
-    // Abrir o modal e carregar o PDF
-    openModalBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        iframe.src = "pdfs/cardapio1.pdf"; // Carregar o PDF
-        modal.style.display = "block";
+    const scale = 1.5; // Zoom no PDF
+    const canvas = document.getElementById('pdf-canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Carregar PDF
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+        pdfDoc = pdfDoc_;
+        document.getElementById('page-count').textContent = pdfDoc.numPages;
+        renderPage(pageNum);
     });
 
-    // Fechar o modal
-    closeModalBtn.onclick = function () {
-        modal.style.display = "none";
-        iframe.src = ""; // Limpar o src ao fechar o modal
+    // Renderizar página
+    function renderPage(num) {
+        pageIsRendering = true;
+
+        // Obter página
+        pdfDoc.getPage(num).then(function(page) {
+            const viewport = page.getViewport({ scale: scale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const renderCtx = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+
+            const renderTask = page.render(renderCtx);
+
+            // Página renderizada
+            renderTask.promise.then(function() {
+                pageIsRendering = false;
+
+                if (pageNumIsPending !== null) {
+                    renderPage(pageNumIsPending);
+                    pageNumIsPending = null;
+                }
+            });
+        });
+
+        // Atualizar contador de páginas
+        document.getElementById('page-num').textContent = num;
     }
 
-    // Fechar o modal ao clicar fora do conteúdo
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-            iframe.src = ""; // Limpar o src ao fechar o modal
+    // Se já houver uma página em renderização, colocar em espera
+    function queueRenderPage(num) {
+        if (pageIsRendering) {
+            pageNumIsPending = num;
+        } else {
+            renderPage(num);
         }
     }
+
+    // Mostrar página anterior
+    document.getElementById('prev-page').addEventListener('click', function() {
+        if (pageNum <= 1) {
+            return;
+        }
+        pageNum--;
+        queueRenderPage(pageNum);
+    });
+
+    // Mostrar próxima página
+    document.getElementById('next-page').addEventListener('click', function() {
+        if (pageNum >= pdfDoc.numPages) {
+            return;
+        }
+        pageNum++;
+        queueRenderPage(pageNum);
+    });
 </script>
 
 </body>
