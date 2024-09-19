@@ -1,125 +1,159 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador de PDF com PDF.js</title>
-    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <title>Visualizador de PDF</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
-        #pdf-viewer {
-            width: 100%;
-            height: 100vh;
-            overflow: scroll;
-        }
-        canvas {
+        
+        #pdf-canvas {
             border: 1px solid black;
-            display: block;
-            margin: 10px auto;
+            width: 50%;
+            max-width: 600px;
+            /* Largura máxima do PDF */
+            height: auto;
+            margin-top: 20px;
         }
+        
         #pdf-controls {
+            margin: 20px 0;
             text-align: center;
-            margin-top: 10px;
         }
+        
         button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        select {
             padding: 10px;
             font-size: 16px;
         }
+        
+        @media screen and (max-width: 768px) {
+            #pdf-canvas {
+                max-width: 90%;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<h1 style="text-align:center;">Visualizador de PDF</h1>
+    <h1>Visualizador de PDFs</h1>
 
-<div id="pdf-controls">
-    <button id="prev-page">Página Anterior</button>
-    <button id="next-page">Próxima Página</button>
-    <span>Página: <span id="page-num"></span> de <span id="page-count"></span></span>
-</div>
+    <!-- Dropdown para escolher o PDF -->
+    <label for="pdf-selector">Escolha um PDF:</label>
+    <select id="pdf-selector">
+    <option value="cardapio1.pdf">Cardápio 1</option>
+    <option value="cardapio2.pdf">Cardápio 2</option>
+    <option value="cardapio3.pdf">Cardápio 3</option>
+    <!-- Adicione mais PDFs aqui -->
+</select>
 
-<div id="pdf-viewer">
+    <div id="pdf-controls">
+        <button id="prev-page">Página Anterior</button>
+        <span>Página <span id="page-num"></span> de <span id="page-count"></span></span>
+        <button id="next-page">Próxima Página</button>
+    </div>
+
     <canvas id="pdf-canvas"></canvas>
-</div>
 
-<script>
-    var url = 'pdfs/seu_arquivo.pdf'; // Caminho para o arquivo PDF
-    var pdfDoc = null,
-        pageNum = 1,
-        pageIsRendering = false,
-        pageNumIsPending = null;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script>
+        let pdfDoc = null,
+            pageNum = 1,
+            pageIsRendering = false,
+            pageNumIsPending = null;
 
-    const scale = 1.5; // Zoom no PDF
-    const canvas = document.getElementById('pdf-canvas');
-    const ctx = canvas.getContext('2d');
+        const scale = 1.0;
+        const canvas = document.getElementById('pdf-canvas');
+        const ctx = canvas.getContext('2d');
 
-    // Carregar PDF
-    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
-        pdfDoc = pdfDoc_;
-        document.getElementById('page-count').textContent = pdfDoc.numPages;
-        renderPage(pageNum);
-    });
+        function renderPage(num) {
+            pageIsRendering = true;
 
-    // Renderizar página
-    function renderPage(num) {
-        pageIsRendering = true;
+            pdfDoc.getPage(num).then(function(page) {
+                const viewport = page.getViewport({
+                    scale: scale
+                });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
 
-        // Obter página
-        pdfDoc.getPage(num).then(function(page) {
-            const viewport = page.getViewport({ scale: scale });
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+                const renderCtx = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
 
-            const renderCtx = {
-                canvasContext: ctx,
-                viewport: viewport
-            };
+                const renderTask = page.render(renderCtx);
+                renderTask.promise.then(function() {
+                    pageIsRendering = false;
+                    if (pageNumIsPending !== null) {
+                        renderPage(pageNumIsPending);
+                        pageNumIsPending = null;
+                    }
+                });
 
-            const renderTask = page.render(renderCtx);
-
-            // Página renderizada
-            renderTask.promise.then(function() {
-                pageIsRendering = false;
-
-                if (pageNumIsPending !== null) {
-                    renderPage(pageNumIsPending);
-                    pageNumIsPending = null;
-                }
+                document.getElementById('page-num').textContent = num;
             });
+        }
+
+        function queueRenderPage(num) {
+            if (pageIsRendering) {
+                pageNumIsPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        document.getElementById('prev-page').addEventListener('click', function() {
+            if (pageNum <= 1) {
+                return;
+            }
+            pageNum--;
+            queueRenderPage(pageNum);
         });
 
-        // Atualizar contador de páginas
-        document.getElementById('page-num').textContent = num;
-    }
+        document.getElementById('next-page').addEventListener('click', function() {
+            if (pageNum >= pdfDoc.numPages) {
+                return;
+            }
+            pageNum++;
+            queueRenderPage(pageNum);
+        });
 
-    // Se já houver uma página em renderização, colocar em espera
-    function queueRenderPage(num) {
-        if (pageIsRendering) {
-            pageNumIsPending = num;
-        } else {
-            renderPage(num);
+        // Função para carregar o PDF
+        function loadPDF(url) {
+            pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+                pdfDoc = pdfDoc_;
+                document.getElementById('page-count').textContent = pdfDoc.numPages;
+                pageNum = 1;
+                renderPage(pageNum);
+            });
         }
-    }
 
-    // Mostrar página anterior
-    document.getElementById('prev-page').addEventListener('click', function() {
-        if (pageNum <= 1) {
-            return;
-        }
-        pageNum--;
-        queueRenderPage(pageNum);
-    });
+        // Carregar o PDF selecionado no dropdown
+        document.getElementById('pdf-selector').addEventListener('change', function() {
+            const selectedPDF = this.value;
+            loadPDF(selectedPDF);
+        });
 
-    // Mostrar próxima página
-    document.getElementById('next-page').addEventListener('click', function() {
-        if (pageNum >= pdfDoc.numPages) {
-            return;
-        }
-        pageNum++;
-        queueRenderPage(pageNum);
-    });
-</script>
+        // Carregar o primeiro PDF por padrão
+        loadPDF(document.getElementById('pdf-selector').value);
+    </script>
 
 </body>
+
 </html>
