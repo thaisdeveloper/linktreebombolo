@@ -14,63 +14,37 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background-color: #f4f4f4;
         }
-
+        
         #pdf-canvas {
             border: 1px solid black;
-            width: 100%;
-            max-width: 100%; /* Ajuste a largura máxima para 100% */
+            width: 50%;
+            max-width: 600px;
+            /* Largura máxima do PDF */
             height: auto;
             margin-top: 20px;
-            background-color: #fff;
         }
-
+        
         #pdf-controls {
             margin: 20px 0;
             text-align: center;
         }
-
+        
         button {
             padding: 10px 20px;
             margin: 0 10px;
             font-size: 16px;
             cursor: pointer;
         }
-
+        
         select {
             padding: 10px;
             font-size: 16px;
         }
-
-        /* Responsividade */
+        
         @media screen and (max-width: 768px) {
             #pdf-canvas {
-                max-width: 90%; /* Para tablets */
-            }
-
-            button {
-                font-size: 14px; /* Tamanho de fonte reduzido */
-            }
-
-            select {
-                font-size: 14px; /* Tamanho de fonte reduzido */
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            #pdf-canvas {
-                max-width: 95%; /* Para celulares */
-            }
-
-            button {
-                padding: 8px 10px;
-                font-size: 10px; /* Tamanho de fonte menor */
-            }
-
-            select {
-                padding: 8px;
-                font-size: 14px; /* Tamanho de fonte menor */
+                max-width: 90%;
             }
         }
     </style>
@@ -86,7 +60,6 @@
     <option value="cardapio1.pdf">Cardápio 1</option>
     <option value="cardapio2.pdf">Cardápio 2</option>
     <option value="cardapio3.pdf">Cardápio 3</option>
-         <option value="cardapio4.pdf">Cardápio 4</option>
     <!-- Adicione mais PDFs aqui -->
 </select>
 
