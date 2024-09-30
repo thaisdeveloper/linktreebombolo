@@ -150,53 +150,23 @@
 
 /* Estilos para o carrossel de depoimentos */
 
-.testimonials-carousel-container {
+.carousel-wrapper {
     position: relative;
-    max-width: 100%;
-    margin: 30px auto;
     overflow: hidden;
-    text-align: center;
 }
 
-.testimonials-wrapper {
-    overflow: hidden;
-    width: 100%;
-}
-
-.testimonials-carousel {
+.carousel {
     display: flex;
-    transition: transform 0.5s ease-in-out;
+    transition: transform 0.5s ease;
 }
 
 .testimonial-item {
-    flex: 0 0 25%;
-    padding: 20px;
-    box-sizing: border-box;
-    text-align: center;
-    background-color: #1a1a1a;
-    color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin: 10px;
+    min-width: 100%;
+    /* Cada item ocupa 100% da largura do contêiner do carrossel */
 }
 
-.testimonial-item img {
-    border-radius: 50%;
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    margin-bottom: 15px;
-}
-
-.testimonial-item p {
-    font-size: 1.1em;
-    font-style: italic;
-    color: #d4af37;
-}
-
-.testimonial-item h4 {
-    font-size: 1.2em;
-    margin-top: 10px;
+.testimonial p,
+h4 {
     color: #fff;
 }
 
