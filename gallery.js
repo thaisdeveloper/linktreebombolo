@@ -20,29 +20,25 @@ function moveCarousel(direction) {
     const imageWidth = document.querySelector('.carousel img').offsetWidth;
     carousel.style.transform = `translateX(${-currentIndex * (imageWidth + 10)}px)`;
 }
-let testimonialIndex = 0;
+let currentIndex = 0;
+const visibleTestimonials = 1; // Altere este valor se quiser mostrar mais depoimentos por vez
 
-function showTestimonials(n) {
-    const testimonials = document.querySelectorAll('.testimonial-item');
-    const carousel = document.querySelector('.testimonials-carousel');
+function moveCarousel(direction) {
+    const carousel = document.querySelector('.carousel');
+    const totalTestimonials = document.querySelectorAll('.testimonial-item').length;
 
-    testimonialIndex += n;
+    // Calcula o índice máximo e mínimo
+    const maxIndex = Math.floor(totalTestimonials - visibleTestimonials);
+    currentIndex += direction; // Aumenta ou diminui o índice
 
-    if (testimonialIndex >= testimonials.length) {
-        testimonialIndex = 0;
+    // Limita o índice para que não saia do limite
+    if (currentIndex < 0) {
+        currentIndex = 0;
+    } else if (currentIndex > maxIndex) {
+        currentIndex = maxIndex;
     }
-    if (testimonialIndex < 0) {
-        testimonialIndex = testimonials.length - 1;
-    }
 
-    const translateX = -testimonialIndex * 100 / testimonials.length;
-    carousel.style.transform = `translateX(${translateX}%)`;
+    // Calcula a largura de cada item e aplica a transformação
+    const testimonialWidth = document.querySelector('.testimonial-item').offsetWidth;
+    carousel.style.transform = `translateX(${-currentIndex * testimonialWidth}px)`;
 }
-
-document.querySelector('.prev-testimonial').addEventListener('click', () => {
-    showTestimonials(-1);
-});
-
-document.querySelector('.next-testimonial').addEventListener('click', () => {
-    showTestimonials(1);
-});
